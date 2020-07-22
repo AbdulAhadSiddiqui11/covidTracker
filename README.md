@@ -5,8 +5,6 @@
 [![Made with Pthon](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 
 
-![Dashboard screenshot](https://github.com/BrianRuizy/covid-19-dashboard/blob/master/core/static/assets/img/covid-19-mockup-min.png)
-
 ## About
 
 > Coronavirus disease (COVID-19) is an infectious disease caused by a newly discovered coronavirus.
