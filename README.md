@@ -23,7 +23,7 @@ The goal of this project is not to build *just another dashboard*. But, to focus
 
 Get the project up and running locally in just 5 easy steps.
 
-1. Create a personal [Fork](https://github.com/login?return_to=%2FBrianRuizy%2Fcovid-19-dashboard) of this repository.
+1. Create a personal fork of this repository.
 
 2. **Clone** the fork with HTTPS, using your local terminal to a preferred location, and **cd** into the project.
 
