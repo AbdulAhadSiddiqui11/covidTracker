@@ -6,7 +6,9 @@ from django.http import HttpResponse
 def index(request):
     return render(request, "index.html")
 
-
+def stats(request):
+    return render(request, "stats.html")
+    
 def pages(request):
     context = {}
     # All resource paths end in .html.

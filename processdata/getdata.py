@@ -1,5 +1,3 @@
-# ©Brian Ruiz, @brianruizy
-# Created: 03-15-2020
 import datetime
 import platform
 

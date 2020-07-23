@@ -12,7 +12,7 @@ def index(request):
 
     context = dict(**world_map_dict)
 
-    return render(request, template_name='index.html', context=context)
+    return render(request, template_name='stats.html', context=context)
 
 
 def report(request):
