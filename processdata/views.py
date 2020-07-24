@@ -1,6 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template import loader
+import requests
+import urllib.parse
+from django.views.decorators.csrf import csrf_exempt
 
 import json
 
@@ -13,7 +16,6 @@ def index(request):
     context = dict(**world_map_dict)
 
     return render(request, template_name='stats.html', context=context)
-
 
 def report(request):
     df = getdata.daily_report(date_string=None)
@@ -81,7 +83,68 @@ def daily_growth(request):
 
     return HttpResponse(json_string, content_type='application/json')
 
+@csrf_exempt
+def getHospitals(request):
+    print('inside gethospitals')
+    isolation=[
+        "Gandhi General Hospital",
+        "Government Chest and General Hospital",
+        "Fever Hospital",
+        "MGM Hospital",
+        "RIMS",
+        "District Hospital",
+        "Government General Hospital",
+        "Care Hospital",
+        "Continental Hospital",
+        "Apollo Hospital",
+        "Thumbay Hospital",
+        "Virinchi Hospital",
+        "Star Hospital",
+        "Yashoda Hospital",
+        "KIMS Hospital",
+        "Sunshine Hospital",
+        "Omega Hospital",
+        "Prathima Hospital",
+        "Star Hospitals",
+        ]
+    if request.method == 'POST':
+        #print("in IF")
+        print(request.POST)
+        data = json.loads(request.body.decode('utf-8'))
+        address = str(data['loc'])
+        url = 'https://nominatim.openstreetmap.org/search/' + urllib.parse.quote(address) +'?format=json'
+        #print('Sending request 1')
+        response = requests.get(url,headers={"User-Agent": "Mozilla/5.0 (X11; CrOS x86_64 12871.102.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.141 Safari/537.36"}, params={})
+        #print('got a response')
+        response = response.json()
+        URL = "https://discover.search.hereapi.com/v1/discover"
+        latitude =  str(response[0]["lat"])
+        longitude = str(response[0]["lon"])
+        api_key = 'tu4m3GFeH7ze3oQDsOBqMpRk3-yFx7XyapfV92Yw-uo' # Acquire from developer.here.com
+        query = 'hospitals'
+        limit = 10
+        PARAMS = {
+                    'apikey':api_key,
+                    'q':query,
+                    'limit': limit,
+                    'at':'{},{}'.format(latitude,longitude)
+                } 
 
-def mapspage(request):
-    plot_div = maps.usa_map()
-    return render(request, template_name='pages/maps.html', context={'usa_map': plot_div})
+        # sending get request and saving the response as response object 
+        #print('Sending request 2')
+        r = requests.get(url = URL, params = PARAMS) 
+        data = r.json()
+        result=[]
+        isoltion_center=[]
+        hospital=[]
+        #print('got a response 2')
+        for i in range(limit):
+            title=data['items'][i]['title']
+            res=hospitalFive_address =  data['items'][i]['address']['label']
+            if title in isolation:
+                isoltion_center.append(res)
+            else:	
+                hospital.append(res)
+        result=[isoltion_center,hospital]
+        #print(result)
+        return HttpResponse(json.dumps({'hospitals':result}), content_type='application/json')
