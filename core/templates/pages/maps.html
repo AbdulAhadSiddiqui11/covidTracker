@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
     <title>
-      COVID-19 Dashboard | Maps
+      COVID-19 Dashboard | Hospital Maps
     </title>
 
     <!-- Favicon - loaded as static -->
@@ -32,35 +32,78 @@
 
     {% include "includes/sidenav.html" %}
 
-    <div class="main-content">
-      <div class = "container" id='main'>
-        <div class="jumbotron jumbotron-fluid mt-3  background">
-          <div class="container ">
-            <h1 class="display-4 text-center text ">Nearby Hospitals Locator</h1>
-          </div>
-        </div>
-        <form action="/getHospitals" method="post">
-          <div class="card">
-            <div class="card-body mt-3" id="btn-predict">>
-              <label for="last">Please enter your location</label>
-                <input type="text" class="form-control" name="loc" id="loc">
-      
-              <hr>
+    <div class="container bg-secondary">
+      <div class="row">
+        <div class="col-12">
+          <div class="jumbotron">
+            <div class="container">
+              <h1 class="display-3 text-center">Nearby Hospitals</h1>
             </div>
           </div>
-          <input class ="btn btn-primary mt-3 btn-block mb-5 background" id='submit-btn' type="submit" value="Submit">
-        </form>
+        </div>
       </div>
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="row align-items-center no-gutters">
+            <div class="col-11">
+              <input type="text" class="form-control" name="loc" id="loc">
+            </div>
+            <div class="col-1">
+              <button type="button" class="btn btn-primary btn-block background" id='submit-btn' type="submit">
+                <i class="fa fa-search" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span id='main'></span>
     </div>
     <!--   Core   -->
     <script src="/static/assets/js/plugins/jquery/dist/jquery.min.js"></script>
     <script src="/static/assets/js/plugins/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
     <script>
       const api = '/getHospitals';
       let parent = document.getElementById('main');
-      let hospitals = document.createElement('p');
       const submitButton = document.getElementById('submit-btn');
-      const loca = 'hyderbad';
+      const createHospitalCard = (hospital) => {
+
+        let col = document.createElement('div');
+        let card = document.createElement('div');
+        let cardHeader = document.createElement('div');
+        let text = document.createElement('h5');
+
+        col.classList.add('col-md-6','col-xs-12');
+        card.classList.add('card','shadow','p-3','mb-3','bg-white', 'rounded', 'text-center');
+        cardHeader.classList.add('card-header');
+        text.classList.add('mb-0');
+
+        text.textContent = hospital;
+
+        cardHeader.appendChild(text);
+        card.appendChild(cardHeader);
+        col.appendChild(card);
+
+        return col;
+      }
+      const createHospitalCardsRow = () => {
+
+        let row = document.createElement('div');
+        row.classList.add('row');
+
+        let rowObj = {'row': row,
+                      'capacity': 0
+        }
+        return rowObj;
+      }
+
+      const fillHospitalRows = (rowObj, hospital) => {
+        rowObj['row'].appendChild(createHospitalCard(hospital));
+        rowObj['capacity']++;
+        return rowObj;
+      }
 
       function makeRequest(verb, url, data) {
         return new Promise((resolve, reject) => {
@@ -99,21 +142,70 @@
         try {
           const postResponse = await postPromise;
 
-          console.log(postPromise);
-          hospitals.textContent = postResponse['hospitals'];
-          console.log(postPromise['hospitals']);
-          parent.appendChild(hospitals);
+          //console.log(postPromise);
+          //console.log(postPromise['hospitals']);
+          let newRow = createHospitalCardsRow();
+
+          // display an alert that isolation centers will be marked in green, if they exists
+          if(postResponse['hospitals'][0].length > 0 ) {
+            let info = document.createElement('div');
+            info.classList.add('alert', 'alert-success');
+            info.textContent = 'Covid-19 isolation centers are marked in green! - Stay safe! ';
+            parent.appendChild(info);
+          }
+
+          for (hospital of postResponse['hospitals'][0]) {
+            if(newRow['capacity'] < 2) {
+              fillHospitalRows(newRow,hospital);
+            } else {
+              let cards = newRow['row'].querySelectorAll('div.bg-white');
+              console.log(cards);
+              for(card of cards) { // for both the cards indexed 0,1 change the bg-class
+                card.classList.remove('bg-white');
+                card.classList.add('bg-success');
+              }
+              parent.appendChild(newRow['row']);
+              newRow = createHospitalCardsRow();
+              fillHospitalRows(newRow,hospital);
+            }
+          }
+          if (newRow['capacity'] > 0) {
+            let cards = newRow['row'].querySelectorAll('div.bg-white');
+              console.log(cards);
+              for(card of cards) { // for both the cards indexed 0,1 change the bg-class
+                card.classList.remove('bg-white');
+                card.classList.add('bg-success');
+              }
+            parent.appendChild(newRow['row']);
+          }
+
+
+          for (hospital of postResponse['hospitals'][1]) {
+            if(newRow['capacity'] < 2) {
+              fillHospitalRows(newRow,hospital);
+            } else {
+              parent.appendChild(newRow['row']);
+              newRow = createHospitalCardsRow();
+              fillHospitalRows(newRow,hospital);
+            }
+          }
+          if (newRow['capacity'] > 0) {
+            parent.appendChild(newRow['row']);
+          }
+          
+
         } catch(error) {
-          hospitals.textContent = error.error;
-          parent.appendChild(hospitals);
+          let err = document.createElement('div');
+          err.classList.add('alert', 'alert-danger');
+          err.textContent = error.error;
+          parent.appendChild(err);
         }
       }
       
 
       submitButton.addEventListener('click', ($event) => {
         $event.preventDefault();
-        console.log("hello");
-        console.log(loca);
+        parent.innerHTML = '';
          createPost();
       });
 

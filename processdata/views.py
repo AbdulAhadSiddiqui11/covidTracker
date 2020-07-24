@@ -140,7 +140,7 @@ def getHospitals(request):
         #print('got a response 2')
         for i in range(limit):
             title=data['items'][i]['title']
-            res=hospitalFive_address =  data['items'][i]['address']['label']
+            res=data['items'][i]['address']['label']
             if title in isolation:
                 isoltion_center.append(res)
             else:	
