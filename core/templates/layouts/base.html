@@ -24,17 +24,18 @@
   
   <!-- Plotly.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.54.6/plotly.min.js"></script>
+  
+  <!-- Specific CSS goes HERE -->
+  {% block stylesheets %}
+  {% endblock stylesheets %}
+
   <style>
     .btn {
       white-space:normal !important;
       word-wrap: break-word; 
   }
-  </style>
-  <!-- Specific CSS goes HERE -->
-  {% block stylesheets %}
+  </style> <!-- to prevent text overflow on buttons (here - accordion buttons) -->
   
-  {% endblock stylesheets %}
-
 </head>
 
 <body class="">
