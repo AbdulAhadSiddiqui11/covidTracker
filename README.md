@@ -28,7 +28,7 @@ Get the project up and running locally in just 5 easy steps.
 2. **Clone** the fork with HTTPS, using your local terminal to a preferred location, and **cd** into the project.
 
 ```bash
-git clone https://github.com/your_username/covid-19-dashboard.git
+git clone https://github.com/AbdulAhadSiddiqui11/covidTracker.git
 
 Cloning into 'covid-19-dashboard'...
 remote: Enumerating objects: 113, done.
